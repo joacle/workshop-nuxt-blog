@@ -2,6 +2,8 @@ const builtAt = new Date().toISOString()
 const path = require('path')
 const { I18N } = require('./locales/i18n-nuxt-config')
 import Mode from "frontmatter-markdown-loader/mode"
+import blogsEn from './contents/en/blogsEn.js'
+import blogsEs from './contents/es/blogsEs.js'
 
 const productionUrl = {
   en: "/en",
@@ -10,6 +12,13 @@ const productionUrl = {
 const baseUrl = '';
 
 module.exports = {
+  generate: {
+    routes: [
+      '/es', '404'
+    ]
+    .concat(blogsEn.map(w => `/blog/${w}`))
+    .concat(blogsEs.map(w => `es/blog/${w}`))
+  },
   env: {
     baseUrl,
     productionUrl
@@ -80,6 +89,17 @@ module.exports = {
         query: {
           limit: 1000,
           name: 'img/[name].[hash:7].[ext]'
+        }
+      },
+      {
+        test: /\.md$/,
+        loader: 'frontmatter-markdown-loader',
+        include: path.resolve(__dirname, 'contents'),
+        options: {
+          mode: [Mode.VUE_RENDER_FUNCTIONS],
+          vue: {
+            root: "dynamicMarkdown"
+          }
         }
       });
     }
